@@ -1,3 +1,5 @@
+//pet_logics.js
+
 export const CONFIG = {
   TICK_RATE: 5000, // The rate where the stat is refreshed
   EXP_PER_LEVEL: 100,

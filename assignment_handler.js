@@ -20,7 +20,7 @@ CHECKLIST.addEventListener('change', (event) => {
   //Check if the changed element is actually a checkbox
   if (cl_handler.type === 'checkbox') {
     if (cl_handler.checked) {
-      read_completed_task(cl_handler);
+      read_completed_task(cl_handler.name);
     } 
   }
 });
@@ -28,7 +28,7 @@ CHECKLIST.addEventListener('change', (event) => {
 
 //Read Completed Task Function
 function read_completed_task(completed_task) {
-    console.log("I worked")
+    console.log(completed_task)
     //read completed task, see type, and return intensity
     return
 }
