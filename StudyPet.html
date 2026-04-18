@@ -1,38 +1,429 @@
-<!-- StudyPet.html -->
 <!DOCTYPE html>
-
-<!--- SECTION 01 ---
-    - ================================== -
-    - HTML Header                        -
-    - ================================== -->
 <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title> StudyPet </title>
-      <h1> StudyPet </h1>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyPet - Your Academic Companion</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        @import "tailwindcss";
 
-<!--- SECTION 02 ---
-    - ================================== -
-    - HTML Body                          -
-    - ================================== -->
-    <body>
-      <!-- Checklist -->
-      <ul id="checklist_container">
-        <li> <input type="checkbox" name="task1"> Task1 </li>
-        <li> <input type="checkbox" name="task2"> Task2 </li>
-      </ul>
+        :root {
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+        }
 
-    </body>
+        body {
+            @apply bg-[#0e1117] text-white font-sans min-h-screen flex items-center justify-center p-4;
+        }
 
-    
-<!--- SECTION 03 ---
-    - ================================== -
-    - HTML JavaScript                    -
-    - ================================== -->
-    <script type="module" src="scripts/StudyPetManager.js"></script>
-    <script type="module" src="scripts/assignment_handler.js"></script>
-    <script type="module" src="scripts/pet_logic.js"></script>
+        .glass-panel {
+            @apply bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl overflow-hidden;
+        }
 
+        .stat-bar-bg {
+            @apply w-full h-3 bg-[#21262d] rounded-full overflow-hidden;
+        }
+
+        .stat-bar-fill {
+            @apply h-full transition-all duration-500 ease-out;
+        }
+
+        .pet-bounce {
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1.05); }
+            50% { transform: translateY(-10px) scale(0.95); }
+        }
+
+        .heartbeat {
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.1); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            @apply bg-transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            @apply bg-[#30363d] rounded-full;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Left Column: Pet View & Stats -->
+        <div class="glass-panel flex flex-col items-center p-8 space-y-8">
+            <div class="w-full flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white">StudyPet</h1>
+                    <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Mk-I Companion</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-bold text-blue-400 font-mono" id="level-display">Lvl 1</div>
+                    <div class="text-xs text-gray-400 font-mono" id="exp-display">EXP 0/100</div>
+                </div>
+            </div>
+
+            <!-- Visual Pet State -->
+            <div class="relative w-48 h-48 flex items-center justify-center">
+                <div id="pet-aura" class="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl opacity-50"></div>
+                <!-- The Pet (Dynamic based on health/mood) -->
+                <div id="pet-visual" class="text-8xl pet-bounce select-none cursor-pointer transform transition-transform hover:scale-110">
+                    🤖
+                </div>
+            </div>
+
+            <!-- Status Bars -->
+            <div class="w-full space-y-4">
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-mono text-gray-400">
+                        <span>HEALTH</span>
+                        <span id="health-val">100%</span>
+                    </div>
+                    <div class="stat-bar-bg">
+                        <div id="health-bar" class="stat-bar-fill bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-mono text-gray-400">
+                        <span>HUNGER</span>
+                        <span id="hunger-val">100%</span>
+                    </div>
+                    <div class="stat-bar-bg">
+                        <div id="hunger-bar" class="stat-bar-fill bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-mono text-gray-400">
+                        <span>MOOD</span>
+                        <span id="mood-val">100%</span>
+                    </div>
+                    <div class="stat-bar-bg">
+                        <div id="mood-bar" class="stat-bar-fill bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Actions & Inventory -->
+        <div class="space-y-6">
+            <!-- Inventory Section -->
+            <div class="glass-panel p-6 space-y-4">
+                <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 border-b border-[#30363d] pb-2">Inventory</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="use-apple" class="group flex items-center justify-between p-4 bg-[#0d1117] border border-[#30363d] rounded-xl hover:border-orange-500 transition-colors disabled:opacity-50">
+                        <div class="flex items-center space-y-1">
+                            <span class="text-2xl mr-3 group-hover:scale-125 transition-transform">🍎</span>
+                            <div class="text-left">
+                                <div class="text-sm font-semibold text-white">Apple</div>
+                                <div class="text-[10px] text-gray-500 uppercase">+10 Hunger</div>
+                            </div>
+                        </div>
+                        <span id="apple-count" class="bg-[#21262d] px-2 py-1 rounded-md font-mono text-xs">0</span>
+                    </button>
+
+                    <button id="use-ball" class="group flex items-center justify-between p-4 bg-[#0d1117] border border-[#30363d] rounded-xl hover:border-blue-500 transition-colors disabled:opacity-50">
+                        <div class="flex items-center space-y-1">
+                            <span class="text-2xl mr-3 group-hover:scale-125 transition-transform">⚽</span>
+                            <div class="text-left">
+                                <div class="text-sm font-semibold text-white">Ball</div>
+                                <div class="text-[10px] text-gray-500 uppercase">+10 Mood</div>
+                            </div>
+                        </div>
+                        <span id="ball-count" class="bg-[#21262d] px-2 py-1 rounded-md font-mono text-xs">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task Checklist Section -->
+            <div class="glass-panel p-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-center border-b border-[#30363d] pb-2 mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Study Tasks</h2>
+                    <span class="text-[10px] text-gray-500 font-mono">Complete for Rewards</span>
+                </div>
+                
+                <div id="checklist-container" class="space-y-3 overflow-y-auto max-h-[300px] pr-2">
+                    <!-- Tasks will be generated here -->
+                    <div class="group flex items-center p-3 bg-[#161b22] border border-[#30363d] rounded-xl hover:bg-[#21262d] transition-colors">
+                        <input type="checkbox" name="task_1" class="w-5 h-5 rounded border-[#30363d] bg-transparent text-blue-600 focus:ring-blue-600 focus:ring-offset-0 transition-all cursor-pointer">
+                        <label class="ml-3 text-sm font-medium text-white flex-1 cursor-pointer">Review Data Structures</label>
+                        <span class="text-[10px] bg-[#21262d] px-2 py-1 rounded-md text-gray-400 font-mono">MEDIUM</span>
+                    </div>
+                    <div class="group flex items-center p-3 bg-[#161b22] border border-[#30363d] rounded-xl hover:bg-[#21262d] transition-colors">
+                        <input type="checkbox" name="task_2" class="w-5 h-5 rounded border-[#30363d] bg-transparent text-blue-600 focus:ring-blue-600 focus:ring-offset-0 transition-all cursor-pointer">
+                        <label class="ml-3 text-sm font-medium text-white flex-1 cursor-pointer">Math Homework Set B</label>
+                        <span class="text-[10px] bg-[#21262d] px-2 py-1 rounded-md text-gray-400 font-mono">HARD</span>
+                    </div>
+                    <div class="group flex items-center p-3 bg-[#161b22] border border-[#30363d] rounded-xl hover:bg-[#21262d] transition-colors">
+                        <input type="checkbox" name="task_3" class="w-5 h-5 rounded border-[#30363d] bg-transparent text-blue-600 focus:ring-blue-600 focus:ring-offset-0 transition-all cursor-pointer">
+                        <label class="ml-3 text-sm font-medium text-white flex-1 cursor-pointer">Write Essay Outline</label>
+                        <span class="text-[10px] bg-[#21262d] px-2 py-1 rounded-md text-gray-400 font-mono">EASY</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex gap-2">
+                    <input type="text" id="new-task-input" placeholder="Add study task..." class="flex-1 bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                    <button id="add-task-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ==========================================
+        // CONFIG & CONSTANTS
+        // ==========================================
+        const CONFIG = {
+            TICK_RATE: 5000,
+            EXP_PER_LEVEL: 100,
+            Drain: { Hunger: 2, Mood: 1.5, Health_Low_hunger: 3 },
+            Caps: { Stats: 100 }
+        };
+
+        const REWARDS = {
+            Easy: { exp: 20, items: [{ name: 'Apple', count: 1 }] },
+            Medium: { exp: 40, items: [{ name: 'Apple', count: 1 }, { name: 'Ball', count: 1 }] },
+            Hard: { exp: 60, items: [{ name: 'Apple', count: 2 }, { name: 'Ball', count: 2 }] }
+        };
+
+        const ITEM_DATABASE = {
+            Apple: { type: 'food', hungerBonus: 10, moodBonus: 1 },
+            Ball: { type: 'mood', hungerBonus: 0, moodBonus: 10 }
+        };
+
+        // ==========================================
+        // STATE MANAGEMENT (StudyPetManager logical equivalent)
+        // ==========================================
+        let stats = JSON.parse(localStorage.getItem('pet_save_data')) || {
+            health: 100,
+            hunger: 100,
+            mood: 100,
+            level: 1,
+            exp: 0,
+            lastTick: Date.now()
+        };
+
+        let inventory = JSON.parse(localStorage.getItem('petInventory')) || {
+            Apple: 0,
+            Ball: 0
+        };
+
+        let tasks = JSON.parse(localStorage.getItem('pet_tasks')) || [
+            { id: 1, text: "Review Data Structures", difficulty: "MEDIUM" },
+            { id: 2, text: "Math Homework Set B", difficulty: "HARD" },
+            { id: 3, text: "Write Essay Outline", difficulty: "EASY" }
+        ];
+
+        // ==========================================
+        // UTILITIES
+        // ==========================================
+        const saveAll = () => {
+            localStorage.setItem('pet_save_data', JSON.stringify(stats));
+            localStorage.setItem('petInventory', JSON.stringify(inventory));
+            localStorage.setItem('pet_tasks', JSON.stringify(tasks));
+        };
+
+        const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+
+        const getDifficulty = () => {
+            const r = Math.random();
+            if (r < 0.5) return "EASY";
+            if (r < 0.85) return "MEDIUM";
+            return "HARD";
+        };
+
+        // ==========================================
+        // CORE LOGIC (pet_logic equivalent)
+        // ==========================================
+        function updateUI() {
+            // Bars
+            document.getElementById('health-bar').style.width = `${stats.health}%`;
+            document.getElementById('hunger-bar').style.width = `${stats.hunger}%`;
+            document.getElementById('mood-bar').style.width = `${stats.mood}%`;
+            
+            // Values
+            document.getElementById('health-val').innerText = `${Math.round(stats.health)}%`;
+            document.getElementById('hunger-val').innerText = `${Math.round(stats.hunger)}%`;
+            document.getElementById('mood-val').innerText = `${Math.round(stats.mood)}%`;
+            
+            // Level/EXP
+            document.getElementById('level-display').innerText = `Lvl ${stats.level}`;
+            document.getElementById('exp-display').innerText = `EXP ${stats.exp}/${CONFIG.EXP_PER_LEVEL}`;
+            
+            // Inventory
+            document.getElementById('apple-count').innerText = inventory.Apple;
+            document.getElementById('ball-count').innerText = inventory.Ball;
+            document.getElementById('use-apple').disabled = inventory.Apple <= 0;
+            document.getElementById('use-ball').disabled = inventory.Ball <= 0;
+
+            // Visual State
+            const pet = document.getElementById('pet-visual');
+            const aura = document.getElementById('pet-aura');
+            
+            if (stats.health < 30) {
+                pet.innerText = '🩹';
+                aura.className = 'absolute inset-0 bg-red-500/10 rounded-full blur-3xl opacity-50';
+            } else if (stats.hunger < 20) {
+                pet.innerText = '🥣';
+                aura.className = 'absolute inset-0 bg-orange-500/10 rounded-full blur-3xl opacity-50';
+            } else if (stats.mood < 40) {
+                pet.innerText = '💤';
+                aura.className = 'absolute inset-0 bg-gray-500/10 rounded-full blur-3xl opacity-50';
+            } else {
+                pet.innerText = stats.level > 5 ? '🚀' : '🤖';
+                aura.className = 'absolute inset-0 bg-blue-500/10 rounded-full blur-3xl opacity-50';
+            }
+        }
+
+        function processTick() {
+            let hungerDrainMult = 1;
+            if (stats.mood < 25) hungerDrainMult = 2;
+            else if (stats.mood < 50) hungerDrainMult = 1.5;
+
+            stats.hunger = clamp(stats.hunger - (CONFIG.Drain.Hunger * hungerDrainMult), 0, CONFIG.Caps.Stats);
+            stats.mood = clamp(stats.mood - CONFIG.Drain.Mood, 0, CONFIG.Caps.Stats);
+
+            if (stats.hunger < 20) {
+                stats.health = clamp(stats.health - CONFIG.Drain.Health_Low_hunger, 0, CONFIG.Caps.Stats);
+            } else if (stats.health < 100) {
+                stats.health = clamp(stats.health + 0.5, 0, 100); // Small passive regen
+            }
+
+            saveAll();
+            updateUI();
+        }
+
+        // ==========================================
+        // ACTIONS (assignment_handler equivalent)
+        // ==========================================
+        function handleTaskCompletion(difficulty) {
+            const reward = REWARDS[difficulty.charAt(0).toUpperCase() + difficulty.slice(1).toLowerCase()] || REWARDS.Easy;
+            
+            // EXP Logic
+            stats.exp += reward.exp;
+            stats.mood = clamp(stats.mood + 10, 0, 100);
+            
+            while (stats.exp >= CONFIG.EXP_PER_LEVEL) {
+                stats.exp -= CONFIG.EXP_PER_LEVEL;
+                stats.level++;
+                alert(`LEVEL UP! Your StudyPet is now Level ${stats.level}!`);
+            }
+
+            // Reward Items
+            reward.items.forEach(item => {
+                inventory[item.name] += item.count;
+            });
+
+            saveAll();
+            updateUI();
+        }
+
+        function useItem(itemName) {
+            if (inventory[itemName] > 0) {
+                const effect = ITEM_DATABASE[itemName];
+                inventory[itemName]--;
+                
+                stats.hunger = clamp(stats.hunger + effect.hungerBonus, 0, 100);
+                stats.mood = clamp(stats.mood + effect.moodBonus, 0, 100);
+                
+                if (itemName === 'Apple') stats.health = clamp(stats.health + 5, 0, 100);
+
+                saveAll();
+                updateUI();
+                
+                // Anim feedback
+                const pet = document.getElementById('pet-visual');
+                pet.classList.remove('pet-bounce');
+                void pet.offsetWidth; // trigger reflow
+                pet.classList.add('heartbeat');
+                setTimeout(() => {
+                    pet.classList.remove('heartbeat');
+                    pet.classList.add('pet-bounce');
+                }, 1500);
+            }
+        }
+
+        // ==========================================
+        // UI HANDLERS
+        // ==========================================
+        function renderTasks() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+            tasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = 'group flex items-center p-3 bg-[#161b22] border border-[#30363d] rounded-xl hover:bg-[#21262d] transition-colors';
+                div.innerHTML = `
+                    <input type="checkbox" class="task-check w-5 h-5 rounded border-[#30363d] bg-transparent text-blue-600 focus:ring-blue-600 focus:ring-offset-0 transition-all cursor-pointer" data-id="${task.id}">
+                    <label class="ml-3 text-sm font-medium text-white flex-1 cursor-pointer">${task.text}</label>
+                    <span class="text-[10px] bg-[#21262d] px-2 py-1 rounded-md text-gray-400 font-mono">${task.difficulty}</span>
+                `;
+                container.appendChild(div);
+            });
+
+            // Re-attach listeners
+            document.querySelectorAll('.task-check').forEach(check => {
+                check.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        const id = parseInt(e.target.dataset.id);
+                        const task = tasks.find(t => t.id === id);
+                        handleTaskCompletion(task.difficulty);
+                        
+                        // Remove task
+                        setTimeout(() => {
+                            tasks = tasks.filter(t => t.id !== id);
+                            saveAll();
+                            renderTasks();
+                        }, 500);
+                    }
+                });
+            });
+        }
+
+        document.getElementById('add-task-btn').addEventListener('click', () => {
+            const input = document.getElementById('new-task-input');
+            if (input.value.trim()) {
+                tasks.push({
+                    id: Date.now(),
+                    text: input.value.trim(),
+                    difficulty: getDifficulty()
+                });
+                input.value = '';
+                saveAll();
+                renderTasks();
+            }
+        });
+
+        document.getElementById('use-apple').addEventListener('click', () => useItem('Apple'));
+        document.getElementById('use-ball').addEventListener('click', () => useItem('Ball'));
+
+        // ==========================================
+        // INIT
+        // ==========================================
+        updateUI();
+        renderTasks();
+        setInterval(processTick, CONFIG.TICK_RATE);
+    </script>
+</body>
 </html>
