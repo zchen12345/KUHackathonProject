@@ -29,6 +29,7 @@ CHECKLIST.addEventListener('change', (event) => {
 //Read Completed Task Function
 function read_completed_task(completed_task) {
     console.log(completed_task)
+    
     //read completed task, see type, and return intensity
     return
 }
