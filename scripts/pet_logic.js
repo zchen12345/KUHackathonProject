@@ -1,5 +1,7 @@
 // pet_logic.js
 
+import { consumeItem } from './StudyPetManager.js';
+
 export const CONFIG = {
 	TICK_RATE: 5000, /*The rate where the stat is refresh*/
 	EXP_PER_LEVEL: 100,
