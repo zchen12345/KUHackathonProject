@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>Canvas · Dashboard</title>
+  <!-- Font Awesome for icons (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Font: Inter (clean, modern) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;  /* soft white-blue background */
+      color: #1e293b;
+    }
+
+    /* MAIN LAYOUT: flex row (sidebar + main) */
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* ---------- SIDEBAR (BLUE) ---------- */
+    .sidebar {
+      width: 260px;
+      background: #0b3b5c;        /* deep canvas blue */
+      color: white;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px 24px;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 12px;
+    }
+
+    .sidebar-logo i {
+      font-size: 2rem;
+      color: white;
+      opacity: 0.9;
+    }
+
+    .sidebar-logo span {
+      background: white;
+      color: #0b3b5c;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 30px;
+      margin-left: 6px;
+    }
+
+    .nav-menu {
+      flex: 1;
+      padding: 8px 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      margin: 4px 0;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.15s;
+      cursor: default;
+    }
+
+    .nav-item i {
+      width: 24px;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+
+    .nav-item.active {
+      background: #1e6a9f;        /* vibrant medium blue */
+      color: white;
+      box-shadow: 0 6px 12px rgba(0, 20, 40, 0.2);
+    }
+
+    .nav-item:not(.active):hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .sidebar-footer {
+      padding: 20px 16px 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85rem;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-footer i {
+      font-size: 1.2rem;
+    }
+
+    /* ---------- MAIN PANEL (WHITE + BLUE ACCENTS) ---------- */
+    .main {
+      flex: 1;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+    }
+
+    /* top bar — white, crisp */
+    .top-bar {
+      background: white;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .page-title h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: #0b3b5c;
+      letter-spacing: -0.02em;
+    }
+
+    .page-title .breadcrumb {
+      font-size: 0.9rem;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .top-actions i {
+      font-size: 1.4rem;
+      color: #1e6a9f;
+      background: #f0f7ff;
+      padding: 10px;
+      border-radius: 50%;
+      transition: 0.15s;
+      cursor: default;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      background: #0b3b5c;
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 8px rgba(11, 59, 92, 0.15);
+    }
+
+    /* dashboard content — two columns (cards + side panel) */
+    .dashboard-content {
+      display: flex;
+      flex: 1;
+      padding: 28px 28px 32px 28px;
+      gap: 28px;
+    }
+
+    /* LEFT: course grid */
+    .courses-section {
+      flex: 2.5;
+      min-width: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #0b3b5c;
+    }
+
+    .section-header a {
+      color: #1e6a9f;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    /* course card — white with blue top */
+    .course-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+      border: 1px solid #eef2f6;
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 28px rgba(11, 59, 92, 0.08), 0 6px 12px rgba(0,0,0,0.02);
+      border-color: #cbd5e1;
+    }
+
+    .card-media {
+      height: 110px;
+      background: linear-gradient(135deg, #1e6a9f 0%, #0b3b5c 100%);
+      position: relative;
+    }
+
+    /* course color accent (blue variant) */
+    .card-media::after {
+      content: "📘";
+      position: absolute;
+      bottom: 10px;
+      right: 16px;
+      font-size: 2.2rem;
+      opacity: 0.3;
+      color: white;
+    }
+
+    .card-content {
+      padding: 18px 16px 20px;
+      background: white;
+    }
+
+    .course-code {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #1e6a9f;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .course-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .course-term {
+      font-size: 0.85rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .course-term i {
+      color: #1e6a9f;
+      font-size: 0.8rem;
+    }
+
+    .card-footer {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      background: #e9f2fa;
+      color: #0b3b5c;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 30px;
+    }
+
+    .card-link {
+      color: #1e6a9f;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    /* RIGHT PANEL — white with blue details */
+    .right-panel {
+      flex: 1.2;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .panel-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+      border: 1px solid #edf2f7;
+      padding: 20px 0 8px 0;
+    }
+
+    .panel-header {
+      padding: 0 20px 16px 20px;
+      border-bottom: 1px solid #eef2f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-header i {
+      font-size: 1.4rem;
+      color: #1e6a9f;
+      background: #e2eff9;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .panel-header h3 {
+      font-weight: 600;
+      color: #0b3b5c;
+      font-size: 1.2rem;
+    }
+
+    .todo-list {
+      padding: 8px 4px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .todo-item:last-child {
+      border-bottom: none;
+    }
+
+    .todo-icon {
+      color: #1e6a9f;
+      font-size: 1.1rem;
+      margin-top: 2px;
+    }
+
+    .todo-text p {
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    .todo-meta {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 4px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .coming-item {
+      padding: 14px 20px;
+      display: flex;
+      gap: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .coming-item i {
+      color: #1e6a9f;
+    }
+
+    .coming-detail .title {
+      font-weight: 500;
+    }
+
+    .coming-detail .date {
+      font-size: 0.8rem;
+      color: #475569;
+    }
+
+    .view-all {
+      padding: 16px 20px 8px;
+      text-align: center;
+    }
+
+    .view-all a {
+      color: #1e6a9f;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    /* responsive touches */
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 90px;
+      }
+      .sidebar-logo span, .sidebar-logo .logo-text, .nav-item span:not(.icon-only) {
+        display: none;
+      }
+      .nav-item {
+        justify-content: center;
+      }
+      .sidebar-logo {
+        justify-content: center;
+      }
+      .sidebar-footer {
+        justify-content: center;
+      }
+      .sidebar-footer span {
+        display: none;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .dashboard-content {
+        flex-direction: column;
+      }
+    }
+
+    /* misc */
+    i {
+      pointer-events: none;
+    }
+    .text-muted {
+      color: #62748c;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- LEFT SIDEBAR — BLUE (canvas style) -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fas fa-gem"></i>
+      <span class="logo-text">Canvas</span>
+      <span>LMS</span>
+    </div>
+    <div class="nav-menu">
+      <div class="nav-item active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-book"></i>
+        <span>Courses</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-users"></i>
+        <span>Groups</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Calendar</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-inbox"></i>
+        <span>Inbox</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-history"></i>
+        <span>History</span>
+      </div>
+      <div class="nav-item" style="margin-top: 20px;">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <i class="fas fa-question-circle"></i>
+      <span>Help & Support</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT (WHITE BACKGROUND) -->
+  <div class="main">
+    <!-- top bar -->
+    <div class="top-bar">
+      <div class="page-title">
+        <h1>Dashboard</h1>
+        <div class="breadcrumb">
+          <i class="fas fa-home" style="margin-right: 6px; color:#1e6a9f;"></i> Home / Dashboard
+        </div>
+      </div>
+      <div class="top-actions">
+        <i class="fas fa-search"></i>
+        <i class="fas fa-bell"></i>
+        <div class="user-profile">
+          <div class="avatar">JD</div>
+          <i class="fas fa-chevron-down" style="background: none; padding:0; font-size:1rem; color:#64748b;"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- dashboard area: courses + right panel -->
+    <div class="dashboard-content">
+      <!-- LEFT: Course cards grid -->
+      <div class="courses-section">
+        <div class="section-header">
+          <h2>My Courses</h2>
+          <a href="#">All courses <i class="fas fa-arrow-right" style="margin-left:6px;"></i></a>
+        </div>
+        <div class="course-grid">
+          <!-- card 1 -->
+          <div class="course-card">
+            <div class="card-media"></div>
+            <div class="card-content">
+              <div class="course-code">CS 230 · FALL 2026</div>
+              <div class="course-title">Data Structures & Algorithms</div>
+              <div class="course-term">
+                <i class="far fa-user"></i> Dr. Chen · 42 students
+              </div>
+              <div class="card-footer">
+                <span class="badge">📋 3 assignments</span>
+                <a href="#" class="card-link">View <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- card 2 -->
+          <div class="course-card">
+            <div class="card-media" style="background: linear-gradient(145deg, #2563eb, #0f3b7a);"></div>
+            <div class="card-content">
+              <div class="course-code">PSYCH 101 · SPRING</div>
+              <div class="course-title">Introduction to Psychology</div>
+              <div class="course-term">
+                <i class="far fa-user"></i> Prof. Alvarez · 87 students
+              </div>
+              <div class="card-footer">
+                <span class="badge">🧠 2 quizzes</span>
+                <a href="#" class="card-link">View <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- card 3 -->
+          <div class="course-card">
+            <div class="card-media" style="background: linear-gradient(145deg, #2c7da0, #1b4e6e);"></div>
+            <div class="card-content">
+              <div class="course-code">MATH 205 · SUMMER</div>
+              <div class="course-title">Linear Algebra & Diff. Eq.</div>
+              <div class="course-term">
+                <i class="far fa-user"></i> Dr. Kapoor · 36 students
+              </div>
+              <div class="card-footer">
+                <span class="badge">📐 1 exam</span>
+                <a href="#" class="card-link">View <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- card 4 -->
+          <div class="course-card">
+            <div class="card-media" style="background: linear-gradient(145deg, #1e6a9f, #0b3b5c);"></div>
+            <div class="card-content">
+              <div class="course-code">DESIGN 150 · FALL</div>
+              <div class="course-title">UX/UI Design Fundamentals</div>
+              <div class="course-term">
+                <i class="far fa-user"></i> M. Rodriguez · 28 students
+              </div>
+              <div class="card-footer">
+                <span class="badge">🎨 project due</span>
+                <a href="#" class="card-link">View <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- card 5 (extra to show grid) -->
+          <div class="course-card">
+            <div class="card-media" style="background: linear-gradient(145deg, #1f5e8e, #113a57);"></div>
+            <div class="card-content">
+              <div class="course-code">BIO 112 · FALL</div>
+              <div class="course-title">Molecular Biology</div>
+              <div class="course-term">
+                <i class="far fa-user"></i> Dr. Weiss · 55 students
+              </div>
+              <div class="card-footer">
+                <span class="badge">🔬 lab</span>
+                <a href="#" class="card-link">View <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: To-do + Coming up (Canvas style) -->
+      <div class="right-panel">
+        <!-- To Do panel -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <i class="fas fa-check-circle"></i>
+            <h3>To Do</h3>
+          </div>
+          <div class="todo-list">
+            <div class="todo-item">
+              <div class="todo-icon"><i class="far fa-file-alt"></i></div>
+              <div class="todo-text">
+                <p>CS 230 – Assignment 4: Binary Trees</p>
+                <div class="todo-meta"><span><i class="far fa-calendar"></i> Due tomorrow</span><span>15 pts</span></div>
+              </div>
+            </div>
+            <div class="todo-item">
+              <div class="todo-icon"><i class="far fa-comment"></i></div>
+              <div class="todo-text">
+                <p>PSYCH 101 – Discussion post + 2 replies</p>
+                <div class="todo-meta"><span><i class="far fa-calendar"></i> Oct 12</span><span>10 pts</span></div>
+              </div>
+            </div>
+            <div class="todo-item">
+              <div class="todo-icon"><i class="fas fa-pencil-alt"></i></div>
+              <div class="todo-text">
+                <p>DESIGN 150 – Wireframe critique</p>
+                <div class="todo-meta"><span><i class="far fa-calendar"></i> Oct 14</span><span>peer review</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="view-all">
+            <a href="#">View all 6 to-do items <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Coming Up panel -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <i class="far fa-clock"></i>
+            <h3>Coming Up</h3>
+          </div>
+          <div class="todo-list">
+            <div class="coming-item">
+              <i class="far fa-calendar-check"></i>
+              <div class="coming-detail">
+                <div class="title">MATH 205 · Midterm Exam</div>
+                <div class="date">Friday, Oct 16 · 10:30 AM</div>
+              </div>
+            </div>
+            <div class="coming-item">
+              <i class="fas fa-video"></i>
+              <div class="coming-detail">
+                <div class="title">CS 230 · Office Hours (Zoom)</div>
+                <div class="date">Tomorrow · 2:00 PM</div>
+              </div>
+            </div>
+            <div class="coming-item">
+              <i class="far fa-file"></i>
+              <div class="coming-detail">
+                <div class="title">BIO 112 · Lab report due</div>
+                <div class="date">Oct 18 · 11:59 PM</div>
+              </div>
+            </div>
+          </div>
+          <div class="view-all">
+            <a href="#">View calendar <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- small Canvas tip (blue/white) -->
+        <div style="background: #e9f2fa; border-radius: 18px; padding: 18px 20px; border-left: 6px solid #1e6a9f;">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <i class="fas fa-lightbulb" style="color:#0b3b5c; font-size:1.5rem;"></i>
+            <span style="font-weight:500; color:#0b3b5c;">Canvas update: new grade posting policy</span>
+          </div>
+          <p style="font-size:0.85rem; margin-top:10px; color:#1e4660;">Grades are now hidden until released.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- subtle extra: blue/white only, all elements use canvas palette -->
+</body>
+</html>
