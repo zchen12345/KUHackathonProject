@@ -1,5 +1,9 @@
 //assignment_handler.js
 
+
+import { loadGame, completeAssignmentLogic } from "./pet_logic.js";
+
+
 /* --- SECTION 01 ---
  *================================== *
  * JavaScript Variables              *
@@ -31,6 +35,17 @@ const REWARDS = {
 };
 
 const CHECKLIST = document.getElementById("checklist_container");
+
+
+const defaultStats = {
+  health: 100,
+  hunger: 100,
+  mood: 100,
+  level: 1,
+  exp: 0
+};
+
+let stats = loadGame() || defaultStats;
 
 
 /* --- SECTION 02 ---
@@ -91,7 +106,18 @@ function reward(task_intensity) {
     const rewardData = REWARDS[task_intensity];
     console.log(rewardData);
 
-    alert(`Task Complete! Gained ${rewardData.exp} EXP and items.`);
+    stats = completeAssignmentLogic(stats, task_intensity, REWARDS);
 
-    return
+    console.log("Updated Stats:", stats);
+
+    alert(
+      `Task Complete!\n` +
+      `+${rewardData.exp} EXP\n` +
+      `Level: ${stats.level}\n` +
+      `Health: ${stats.health}\n` +
+      `Hunger: ${stats.hunger}\n` +
+      `Mood: ${stats.mood}`
+    );
+
+    return;
 }
