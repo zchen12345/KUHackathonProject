@@ -24,30 +24,6 @@ export const CONFIG = {
   }
 };
 
-export const REWARDS = {
-  Easy: {
-    exp: 20,
-    items: [
-      { name: 'Apple', count: 1 },
-      { name: 'Ball', count: 1 }
-    ]
-  },
-  Medium: {
-    exp: 40,
-    items: [
-      { name: 'Apple', count: 2 },
-      { name: 'Ball', count: 2 }
-    ]
-  },
-  Hard: {
-    exp: 60,
-    items: [
-      { name: 'Apple', count: 4 },
-      { name: 'Ball', count: 4 }
-    ]
-  }
-};
-
 export const ITEM_DATABASE = {
   Apple: { type: 'food', hungerBonus: 10, moodBonus: 1 },
   Ball: { type: 'mood', hungerBonus: 0, moodBonus: 10 }
