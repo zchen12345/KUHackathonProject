@@ -43,7 +43,7 @@ export function useItem(type) {
   if (inventory[type] > 0) {
     inventory[type]--;
     saveToDisk();
-    return true; // Success
+    return true; 
   }
-  return false; // None left
+  return false; 
 }

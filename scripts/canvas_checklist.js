@@ -1,14 +1,25 @@
 //canvas_checklist.js
 
+/* --- SECTION 02 ---
+ *================================== *
+ * JavaScript Functions              *
+ *================================== */
+
 //To-do List Toggle Function
 function toggleTodo(checkbox) {
-    // Find the parent .todo-item 
-    const todoItem = checkbox.closest('.todo-item');
+  //Find the closest parent with the class 'todo-item'
+  const todoItem = checkbox.closest('.todo-item');
+  
+  if (checkbox.checked) {
+    //Add the completed class to trigger the CSS fade
+    todoItem.classList.add('completed');
 
-    //Toggle the completed class
-    if (checkbox.checked) {
-      todoItem.classList.add('completed');
-    } else {
-      todoItem.classList.remove('completed');
-    }
+    //Remove Element After Timeout
+    setTimeout(() => {
+      todoItem.style.display = 'none';
+    }, 500);
+
+  } else {
+    todoItem.classList.remove('completed');
   }
+}
