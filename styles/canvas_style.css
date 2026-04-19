@@ -1,5 +1,9 @@
 /* canvas_style.css */
 
+/* --- SECTION 01 ---
+ *================================== *
+ * CSS "Canvas" Website              * 
+ *================================== */
 
 * {
     margin: 0;
@@ -14,7 +18,11 @@ body, html {
     color: #1e293b;
 }
 
-/* MAIN LAYOUT: flex row (sidebar + main) */
+/* --- SECTION 02 ---
+ *===================================================== *
+ * MAIN LAYOUT: flex row (sidebar + main)               *
+ *===================================================== */
+
 .app {
     display: flex;
     height: 100vh;
@@ -160,6 +168,74 @@ body, html {
     cursor: default;
 }
 
+/* ---------- StudyPet Pop-up ---------- */
+
+.action-item {
+    cursor: pointer;
+}
+
+.modal-overlay {
+    display: none;        /* Hidden by default */
+    position: fixed;      
+    top: 0;
+    left: 0;
+    width: 100vw;         
+    height: 100vh;        
+    background: rgba(15, 23, 42, 0.7); 
+    z-index: 99999;       /* Ensures it is above the Top Bar and Sidebar */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-container {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    height: 600px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    /* Prevent the container from inheriting alignment from parent */
+    margin: auto; 
+}
+
+.modal-header {
+    padding: 15px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: #1e6a9f;
+}
+
+.close-btn {
+    cursor: pointer !important; /* Ensure the pointer shows */
+    color: #64748b;
+    transition: color 0.2s;
+    font-size: 1.2rem;
+    pointer-events: auto !important; /* Override the 'i {pointer-events: none}' at the bottom of your CSS */
+}
+
+.close-btn:hover {
+    color: #ef4444;
+}
+
+.modal-body {
+    flex-grow: 1;
+    height: 100%;
+}
+
+#studyPetFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 .user-profile {
     display: flex;
     align-items: center;
@@ -180,7 +256,11 @@ body, html {
     box-shadow: 0 4px 8px rgba(11, 59, 92, 0.15);
 }
 
-/* dashboard content — two columns (cards + side panel) */
+/* --- SECTION 03 ---
+ *===================================================== *
+ * dashboard content — two columns (cards + side panel) *
+ *===================================================== */
+
 .dashboard-content {
     display: flex;
     flex: 1;
@@ -353,6 +433,11 @@ body, html {
     font-size: 1.2rem;
 }
 
+/* --- SECTION 04 ---
+ *===================================================== *
+ * todo-list                                            *
+ *===================================================== */
+
 .todo-list {
     padding: 8px 4px;
 }
@@ -388,6 +473,30 @@ body, html {
     gap: 12px;
 }
 
+.todo-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #1e6a9f; /* Canvas blue for the check */
+    margin-top: 4px;
+}
+
+.todo-item.completed {
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+    pointer-events: none; /* Prevents clicking again while faded */
+    text-decoration: line-through; /* Optional: adds a visual strike */
+}
+
+.todo-item.completed .todo-meta {
+    opacity: 0.5;
+}
+
+/* --- SECTION 05 ---
+ *===================================================== *
+ * Coming Item & View All                               *
+ *===================================================== */
+
 .coming-item {
     padding: 14px 20px;
     display: flex;
@@ -420,7 +529,11 @@ body, html {
     font-size: 0.9rem;
 }
 
-/* responsive touches */
+/* --- SECTION 06 ---
+ *===================================================== *
+ * responsive touches                                   *
+ *===================================================== */
+
 @media (max-width: 900px) {
     .sidebar {
     width: 90px;
@@ -454,24 +567,4 @@ i {
 }
 .text-muted {
     color: #62748c;
-}
-
-/* to-do checklist */
-.todo-checkbox {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #1e6a9f; /* Canvas blue for the check */
-    margin-top: 4px;
-}
-
-.todo-item.completed {
-    opacity: 0.3;
-    transition: opacity 0.5s ease;
-    pointer-events: none; /* Prevents clicking again while faded */
-    text-decoration: line-through; /* Optional: adds a visual strike */
-}
-
-.todo-item.completed .todo-meta {
-    opacity: 0.5;
 }

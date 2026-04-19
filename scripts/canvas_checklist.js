@@ -23,3 +23,19 @@ function toggleTodo(checkbox) {
     todoItem.classList.remove('completed');
   }
 }
+
+function openStudyPet() {
+  document.getElementById('studyPetModal').style.display = 'flex';
+}
+
+function closeStudyPet() {
+  document.getElementById('studyPetModal').style.display = 'none';
+}
+
+// Optional: Close the pop-up if the user clicks outside the window
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('studyPetModal');
+  if (event.target == modal) {
+    closeStudyPet();
+  }
+});

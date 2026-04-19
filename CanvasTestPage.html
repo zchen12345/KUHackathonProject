@@ -85,6 +85,10 @@
         </div>
       </div>
       <div class="top-actions">
+        <div class="action-item" onclick="openStudyPet()">
+          <i class="fas fa-paw" style="color: #1e6a9f; cursor: pointer;" title="Open StudyPet"></i>
+        </div>
+
         <i class="fas fa-search"></i>
         <i class="fas fa-bell"></i>
         <div class="user-profile">
@@ -284,6 +288,23 @@
 <!-- subtle extra: blue/white only, all elements use canvas palette -->
 
 <!--- SECTION 04 ---
+    - ================================== -
+    - HTML StudyPet Connection           -
+    - ================================== -->
+
+<div id="studyPetModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span><i class="fas fa-gem"></i> StudyPet Companion</span>
+      <i class="fas fa-times close-btn" onclick="closeStudyPet()"></i>
+    </div>
+    <div class="modal-body">
+      <iframe src="StudyPet.html" frameborder="0" id="studyPetFrame"></iframe>
+    </div>
+  </div>
+</div>
+
+<!--- SECTION 05 ---
     - ================================== -
     - HTML JavaScript                    -
     - ================================== -->
