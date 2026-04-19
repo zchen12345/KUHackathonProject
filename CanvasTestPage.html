@@ -92,7 +92,7 @@
         <i class="fas fa-search"></i>
         <i class="fas fa-bell"></i>
         <div class="user-profile">
-          <div class="avatar">JD</div>
+          <div class="avatar">ZC</div>
           <i class="fas fa-chevron-down" style="background: none; padding:0; font-size:1rem; color:#64748b;"></i>
         </div>
       </div>
@@ -113,7 +113,7 @@
           <div class="course-card">
             <div class="card-media"></div>
             <div class="card-content">
-              <div class="course-code">CS 230 · FALL 2026</div>
+              <div class="course-code">EECS 330 · Spring 2026</div>
               <div class="course-title">Data Structures & Algorithms</div>
               <div class="course-term">
                 <i class="far fa-user"></i> Dr. Chen · 42 students
@@ -129,7 +129,7 @@
           <div class="course-card">
             <div class="card-media" style="background: linear-gradient(145deg, #2563eb, #0f3b7a);"></div>
             <div class="card-content">
-              <div class="course-code">PSYCH 101 · SPRING</div>
+              <div class="course-code">PSYCH 101 · Spring 2026</div>
               <div class="course-title">Introduction to Psychology</div>
               <div class="course-term">
                 <i class="far fa-user"></i> Prof. Alvarez · 87 students
@@ -145,7 +145,7 @@
           <div class="course-card">
             <div class="card-media" style="background: linear-gradient(145deg, #2c7da0, #1b4e6e);"></div>
             <div class="card-content">
-              <div class="course-code">MATH 205 · SUMMER</div>
+              <div class="course-code">Spring 2026 · Spring 2026</div>
               <div class="course-title">Linear Algebra & Diff. Eq.</div>
               <div class="course-term">
                 <i class="far fa-user"></i> Dr. Kapoor · 36 students
@@ -161,8 +161,8 @@
           <div class="course-card">
             <div class="card-media" style="background: linear-gradient(145deg, #1e6a9f, #0b3b5c);"></div>
             <div class="card-content">
-              <div class="course-code">DESIGN 150 · FALL</div>
-              <div class="course-title">UX/UI Design Fundamentals</div>
+              <div class="course-code">EECS 268 · Spring 2026</div>
+              <div class="course-title">Programming II</div>
               <div class="course-term">
                 <i class="far fa-user"></i> M. Rodriguez · 28 students
               </div>
@@ -177,7 +177,7 @@
           <div class="course-card">
             <div class="card-media" style="background: linear-gradient(145deg, #1f5e8e, #113a57);"></div>
             <div class="card-content">
-              <div class="course-code">BIO 112 · FALL</div>
+              <div class="course-code">BIO 112 · Spring 2026</div>
               <div class="course-title">Molecular Biology</div>
               <div class="course-term">
                 <i class="far fa-user"></i> Dr. Weiss · 55 students
@@ -204,7 +204,7 @@
             <div class="todo-item">
               <input type="checkbox" class="todo-checkbox" onclick="toggleTodo(this)">
               <div class="todo-text">
-                <p>CS 230 – Assignment 4: Binary Trees</p>
+                <p>EECS 330 – Assignment 4: Binary Trees</p>
                 <div class="todo-meta">
                   <span><i class="far fa-calendar"></i> Due tomorrow</span>
                   <span>15 pts</span>
@@ -226,16 +226,19 @@
             <div class="todo-item">
               <input type="checkbox" class="todo-checkbox" onclick="toggleTodo(this)">
               <div class="todo-text">
-                <p>DESIGN 150 – Wireframe critique</p>
+                <p>EECS 268 – Lab 9</p>
                 <div class="todo-meta">
                   <span><i class="far fa-calendar"></i> Oct 14</span>
-                  <span>peer review</span>
+                  <span>20 pts</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="view-all">
-            <a href="#">View all 6 to-do items <i class="fas fa-arrow-right"></i></a>
+            <a href="#" id="todo-count-link">
+              View all <span id="todo-count-num">6</span> to-do items 
+              <i class="fas fa-arrow-right"></i>
+            </a>
           </div>
         </div>
 
@@ -249,14 +252,14 @@
             <div class="coming-item">
               <i class="far fa-calendar-check"></i>
               <div class="coming-detail">
-                <div class="title">MATH 205 · Midterm Exam</div>
+                <div class="title">MATH 290 · Midterm Exam</div>
                 <div class="date">Friday, Oct 16 · 10:30 AM</div>
               </div>
             </div>
             <div class="coming-item">
               <i class="fas fa-video"></i>
               <div class="coming-detail">
-                <div class="title">CS 230 · Office Hours (Zoom)</div>
+                <div class="title">EECS 330 · Office Hours (Zoom)</div>
                 <div class="date">Tomorrow · 2:00 PM</div>
               </div>
             </div>

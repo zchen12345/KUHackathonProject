@@ -191,8 +191,8 @@ body, html {
 .modal-container {
     background: white;
     width: 90%;
-    max-width: 500px;
-    height: 600px;
+    max-width: 700px;
+    height: 800px;
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -440,57 +440,61 @@ body, html {
 
 .todo-list {
     padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; 
 }
 
 .todo-item {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 1;
+}
+
+.todo-item.hidden-state {
+    opacity: 0;
+    transform: translateY(15px);
+}
+
+.todo-item.leaving {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.todo-header {
     display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 20px;
-    border-bottom: 1px solid #f1f5f9;
+    align-items: center; 
+    gap: 10px;          
 }
 
-.todo-item:last-child {
-    border-bottom: none;
-}
-
-.todo-icon {
-    color: #1e6a9f;
-    font-size: 1.1rem;
-    margin-top: 2px;
-}
-
-.todo-text p {
+.todo-title {
     font-weight: 500;
     color: #1e293b;
+    margin: 0;          
+    line-height: 1.2;
 }
 
 .todo-meta {
     font-size: 0.8rem;
     color: #64748b;
     margin-top: 4px;
+    margin-left: 28px; /* Perfectly aligns meta text under the title */
     display: flex;
     gap: 12px;
+    align-items: center;
+}
+
+.todo-meta i {
+    font-size: 0.75rem; /* Slightly smaller icons for the meta row */
 }
 
 .todo-checkbox {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
     cursor: pointer;
-    accent-color: #1e6a9f; /* Canvas blue for the check */
-    margin-top: 4px;
+    accent-color: #1e6a9f;
 }
 
-.todo-item.completed {
-    opacity: 0.3;
-    transition: opacity 0.5s ease;
-    pointer-events: none; /* Prevents clicking again while faded */
-    text-decoration: line-through; /* Optional: adds a visual strike */
-}
-
-.todo-item.completed .todo-meta {
-    opacity: 0.5;
-}
 
 /* --- SECTION 05 ---
  *===================================================== *

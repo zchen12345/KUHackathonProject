@@ -3,13 +3,13 @@
 import { consumeItem } from './StudyPetManager.js';
 
 export const CONFIG = {
-	TICK_RATE: 5000, /*The rate where the stat is refresh*/
+	TICK_RATE: 10000, /*The rate where the stat is refresh*/
 	EXP_PER_LEVEL: 100,
 
 	/*The drain rate for different stat*/
 	Drain: {
-		Hunger: 2,
-		Mood: 1.5,
+		Hunger: 1,
+		Mood: 1,
 		Health_Low_hunger: 3,
 		Health_Failed_task: 15
 	},
