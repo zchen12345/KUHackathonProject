@@ -19,8 +19,8 @@
         <div class="glass-panel flex flex-col items-center p-8 space-y-8">
             <div class="w-full flex justify-between items-start">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-white">StudyPet</h1>
-                    <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Mk-I Companion</p>
+                  <h1 id="pet-name-display" class="text-2xl font-bold tracking-tight text-white uppercase">StudyPet</h1>
+                  <p id="pet-subtitle-display" class="text-xs font-mono text-gray-500 uppercase tracking-widest">Mk-I Companion</p>
                 </div>
                 <div class="text-right">
                     <div class="text-3xl font-bold text-blue-400 font-mono" id="level-display">Lvl 1</div>
@@ -33,7 +33,7 @@
                 <div id="pet-aura" class="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl opacity-50"></div>
                 <!-- The Pet (Dynamic based on health/mood) -->
                 <div id="pet-visual" class="text-8xl pet-bounce select-none cursor-pointer transform transition-transform hover:scale-110">
-                    🤖
+                    😺
                 </div>
             </div>
 
@@ -148,6 +148,23 @@
         </div>
     </div>
 
+    <!-- Start Modal -->
+    <div id="start-modal" class="fixed inset-0 bg-[#0d1117] flex items-center justify-center z-[100]">
+          <div class="glass-panel p-8 max-w-md w-full text-center space-y-6 animate-in fade-in zoom-in">
+              <div class="text-6xl pet-bounce">😼</div>
+              <div class="space-y-2">
+                  <h2 class="text-3xl font-bold text-white">Welcome, Researcher</h2>
+                  <p class="text-gray-400 text-sm">Please initialize your StudyPet.</p>
+              </div>
+              <div class="space-y-4">
+                  <input type="text" id="pet-name-input" placeholder="Enter Pet Name..." class="w-full bg-[#161b22] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all text-center font-mono"></input>
+                  <button id="begin-journey-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/20">
+                      Begin Initialization
+                  </button>
+              </div>
+          </div>
+      </div>
+
     <!-- Death Modal -->
     <div id="death-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
         <div class="glass-panel p-8 max-w-md text-center space-y-6 animate-in fade-in zoom-in">
@@ -177,7 +194,8 @@
         // CONFIG & CONSTANTS
         // ==========================================
         const CONFIG = {
-            TICK_RATE: 10000,
+            //TICK_RATE: 10000, TEMPORARY
+            TICK_RATE: 1,
             EXP_PER_LEVEL: 100,
             Drain: {
                 Hunger_High: 0.006,
@@ -205,6 +223,7 @@
         // STATE MANAGEMENT (StudyPetManager logical equivalent)
         // ==========================================
         let stats = JSON.parse(localStorage.getItem('pet_save_data')) || {
+            name: "", // Initialized as empty
             health: 100,
             hunger: 100,
             mood: 100,
@@ -242,10 +261,60 @@
             return "HARD";
         };
 
+        function initGameFlow() {
+          const startModal = document.getElementById('start-modal');
+          
+          // Check if name is empty OR if the pet is dead (health <= 0)
+          if (!stats.name || stats.name === "" || stats.health <= 0) {
+              startModal.classList.remove('hidden');
+              // Do NOT start the loop here; wait for name input
+          } else {
+              startModal.classList.add('hidden');
+              startGameLoop(); // Only start loop if pet is alive and named
+          }
+        }
+        
+        // ==========================================
+        // Start StudyPet Logic
+        // ==========================================
+        function startGameLoop() {
+            updateUI();
+            renderTasks();
+            gameLoopId = setInterval(processTick, CONFIG.TICK_RATE);
+        }
+
+        // Event listener for the "Begin" button
+        document.getElementById('begin-journey-btn').addEventListener('click', () => {
+            const input = document.getElementById('pet-name-input');
+            const name = input.value.trim();
+
+            if (name.length < 2) {
+                input.classList.add('border-red-500');
+                return;
+            }
+
+            stats.name = name;
+            saveAll();
+            
+            // UI Transition
+            document.getElementById('start-modal').classList.add('hidden');
+            document.getElementById('pet-name-display').innerText = stats.name;
+            
+            startGameLoop();
+        });
+
+
         // ==========================================
         // CORE LOGIC (pet_logic equivalent)
         // ==========================================
         function updateUI() {
+          const name = stats.name || "StudyPet";
+            // Updates the main Bold Header
+            document.getElementById('pet-name-display').innerText = name;
+            
+            // Updates the Small Subtitle
+            document.getElementById('pet-subtitle-display').innerText = `${name}`;
+
             // Bars
             document.getElementById('health-bar').style.width = `${stats.health}%`;
             document.getElementById('hunger-bar').style.width = `${stats.hunger}%`;
@@ -355,49 +424,33 @@
         }
 
         function restartGame() {
-            // Clear all saved data
-            localStorage.removeItem('pet_save_data');
-            localStorage.removeItem('petInventory');
-            localStorage.removeItem('pet_tasks');
-            
-            // Reset stats to initial values
-            stats = {
-                health: 100,
-                hunger: 100,
-                mood: 100,
-                level: 1,
-                exp: 0,
-                lastTick: Date.now()
-            };
-            
-            // Reset inventory
-            inventory = {
-                Apple: 0,
-                Ball: 0
-            };
-            
-            // Reset tasks
-            tasks = [
-                { id: 1, text: "Review Data Structures", difficulty: "MEDIUM" },
-                { id: 2, text: "Math Homework Set B", difficulty: "HARD" },
-                { id: 3, text: "Write Essay Outline", difficulty: "EASY" }
-            ];
-            
-            // Save and hide modal
-            saveAll();
-            document.getElementById('death-modal').classList.add('hidden');
-            
-            // Re-enable interactive elements
-            document.getElementById('use-apple').disabled = false;
-            document.getElementById('use-ball').disabled = false;
-            document.getElementById('add-task-btn').disabled = false;
-            document.getElementById('new-task-input').disabled = false;
-            
-            // Update UI and restart game loop
-            updateUI();
-            renderTasks();
-            gameLoopId = setInterval(processTick, CONFIG.TICK_RATE);
-        }
+        document.getElementById('death-modal').classList.add('hidden');
+
+        stats = {
+            name: "", // Clear the name to trigger the naming screen
+            health: 100,
+            hunger: 100,
+            mood: 100,
+            level: 1,
+            exp: 0,
+            lastTick: Date.now()
+        };
+        
+        inventory = { Apple: 0, Ball: 0 };
+        
+        tasks = [
+            { id: 1, text: "Review Data Structures", difficulty: "MEDIUM" },
+            { id: 2, text: "Math Homework Set B", difficulty: "HARD" },
+            { id: 3, text: "Write Essay Outline", difficulty: "EASY" }
+        ];
+        
+        saveAll();
+        
+        document.getElementById('add-task-btn').disabled = false;
+        document.getElementById('new-task-input').disabled = false;
+
+        initGameFlow();
+      }
 
         // ==========================================
         // ACTIONS (assignment_handler equivalent)
@@ -507,9 +560,8 @@
         // INIT
         // ==========================================
         let gameLoopId;
-        updateUI();
-        renderTasks();
-        gameLoopId = setInterval(processTick, CONFIG.TICK_RATE);
+        initGameFlow();
+
     </script>
 </body>
 </html>
