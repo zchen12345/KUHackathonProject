@@ -1,23 +1,23 @@
-**KU Hackathon 2026 Project**
+**KU Hackathon 2026 Project** <br>
 
-Project Name: StudyPet
+Project Name: StudyPet <br>
 Theme Track : Make Something Boring, Fun!
 
-*Abstract:*
+*Abstract:* <br>
 StudyPet is a HTML/CSS/JavaScript Project that creates a virtual pet for the user. 
 Every completed task from the user's Canvas to-do list will provide the user with items that will grow the user's StudyPet.
 The pet can perish if an assignment lingers for too long, so be sure to complete your assignments!
 
-*How to Use Our Project*
+*How to Use Our Project* <br>
 Unfortunately we were unable to connect our project to Infrastructure Canvas API, so we created a mock Canvas dashboard HTML file.<br>
 Step 1. Launch CanvasTestPage.html<br>
 Step 2. Click the Paw Icon towards the top portion of the HTML page<br>
 Step 3. Name your StudyPet and start completing assignments!
 
-*Inspiration:*
+*Inspiration:* <br>
 Our group wanted to make studying/completing assignments from the Canvas to-do list more fun, so we created an interactive virtual pet that a Canvas user can raise by doing their Canvas assignments.
 
-*Project Explanation:*
+*Project Explanation:* <br>
 The Infrastructure Canvas page will have a new button that will launch the StudyPet application.
 The user is greeted with a pet naming initialization screen if this is the first time the user launches StudyPet.
 If the user already has StudyPet data, then the user will be directed to their pet data without seeing the initialization screen.
