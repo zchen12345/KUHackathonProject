@@ -289,16 +289,16 @@
             const aura = document.getElementById('pet-aura');
             
             if (stats.health < 30) {
-                pet.innerText = '🩹';
+                pet.innerText = '😿';
                 aura.className = 'absolute inset-0 bg-red-500/10 rounded-full blur-3xl opacity-50';
             } else if (stats.hunger < 20) {
-                pet.innerText = '🥣';
+                pet.innerText = '😾';
                 aura.className = 'absolute inset-0 bg-orange-500/10 rounded-full blur-3xl opacity-50';
             } else if (stats.mood < 40) {
-                pet.innerText = '💤';
+                pet.innerText = '🙀';
                 aura.className = 'absolute inset-0 bg-gray-500/10 rounded-full blur-3xl opacity-50';
             } else {
-                pet.innerText = stats.level > 5 ? '🚀' : '🤖';
+                pet.innerText = stats.level > 5 ? '😸' : '😺';
                 aura.className = 'absolute inset-0 bg-blue-500/10 rounded-full blur-3xl opacity-50';
             }
         }
