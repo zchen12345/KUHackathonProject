@@ -40,9 +40,12 @@
             <!-- Status Bars -->
             <div class="w-full space-y-4">
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs font-mono text-gray-400">
-                        <span>HEALTH</span>
-                        <span id="health-val">100%</span>
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-gray-400">HEALTH</span>
+                        <div class="text-right">
+                            <span id="health-val" class="text-gray-400">100%</span>
+                            <span id="health-drain" class="ml-2 text-gray-600 text-[10px]">(-3.6/h)</span>
+                        </div>
                     </div>
                     <div class="stat-bar-bg">
                         <div id="health-bar" class="stat-bar-fill bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" style="width: 100%"></div>
@@ -50,9 +53,12 @@
                 </div>
 
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs font-mono text-gray-400">
-                        <span>HUNGER</span>
-                        <span id="hunger-val">100%</span>
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-gray-400">HUNGER</span>
+                        <div class="text-right">
+                            <span id="hunger-val" class="text-gray-400">100%</span>
+                            <span id="hunger-drain" class="ml-2 text-gray-600 text-[10px]">(-1.8/h)</span>
+                        </div>
                     </div>
                     <div class="stat-bar-bg">
                         <div id="hunger-bar" class="stat-bar-fill bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" style="width: 100%"></div>
@@ -60,9 +66,12 @@
                 </div>
 
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs font-mono text-gray-400">
-                        <span>MOOD</span>
-                        <span id="mood-val">100%</span>
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-gray-400">MOOD</span>
+                        <div class="text-right">
+                            <span id="mood-val" class="text-gray-400">100%</span>
+                            <span id="mood-drain" class="ml-2 text-gray-600 text-[10px]">(-1.08/h)</span>
+                        </div>
                     </div>
                     <div class="stat-bar-bg">
                         <div id="mood-bar" class="stat-bar-fill bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: 100%"></div>
@@ -139,6 +148,30 @@
         </div>
     </div>
 
+    <!-- Death Modal -->
+    <div id="death-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="glass-panel p-8 max-w-md text-center space-y-6 animate-in fade-in zoom-in">
+            <div class="text-6xl">💀</div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-bold text-red-400">Your Pet Has Passed Away...</h2>
+                <p class="text-gray-400 text-sm">Don't worry! You can start fresh with a new companion.</p>
+            </div>
+            <div class="bg-[#161b22] rounded-lg p-4 text-left space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Level Reached:</span>
+                    <span id="death-level" class="text-white font-mono font-bold">-</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Total EXP Gained:</span>
+                    <span id="death-exp" class="text-white font-mono font-bold">-</span>
+                </div>
+            </div>
+            <button id="restart-btn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105">
+                Start New Journey
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         // ==========================================
         // CONFIG & CONSTANTS
@@ -146,7 +179,14 @@
         const CONFIG = {
             TICK_RATE: 10000,
             EXP_PER_LEVEL: 100,
-            Drain: { Hunger: 2, Mood: 1.5, Health_Low_hunger: 3 },
+            Drain: {
+                Hunger_High: 0.006,
+                Mood_High: 0.004,
+                Health_Low_hunger_High: 0.006,
+                Hunger_Low: 0.025,
+                Mood_Low: 0.015,
+                Health_Low_hunger_Low: 0.025
+            },
             Caps: { Stats: 100 }
         };
 
@@ -226,6 +266,24 @@
             document.getElementById('use-apple').disabled = inventory.Apple <= 0;
             document.getElementById('use-ball').disabled = inventory.Ball <= 0;
 
+            // Calculate drain rates (per hour) based on mood level
+            const isLowMood = stats.mood <= 50;
+            const hungerDrainPerHour = (isLowMood ? CONFIG.Drain.Hunger_Low : CONFIG.Drain.Hunger_High) * 360;
+            const moodDrainPerHour = (isLowMood ? CONFIG.Drain.Mood_Low : CONFIG.Drain.Mood_High) * 360;
+            const healthDrainPerHour = (isLowMood ? CONFIG.Drain.Health_Low_hunger_Low : CONFIG.Drain.Health_Low_hunger_High) * 360;
+            
+            // Update drain rate displays
+            const moodStatus = isLowMood ? " [LOW]" : "";
+            document.getElementById('hunger-drain').innerText = `(-${hungerDrainPerHour.toFixed(2)}/h)${moodStatus}`;
+            document.getElementById('mood-drain').innerText = `(-${moodDrainPerHour.toFixed(2)}/h)${moodStatus}`;
+            
+            // Health drain varies based on hunger condition
+            if (stats.hunger < 20) {
+                document.getElementById('health-drain').innerText = `(-${healthDrainPerHour.toFixed(2)}/h)${moodStatus}`;
+            } else {
+                document.getElementById('health-drain').innerText = `(+regen)`;
+            }
+
             // Visual State
             const pet = document.getElementById('pet-visual');
             const aura = document.getElementById('pet-aura');
@@ -246,21 +304,99 @@
         }
 
         function processTick() {
-            let hungerDrainMult = 1;
-            if (stats.mood < 25) hungerDrainMult = 2;
-            else if (stats.mood < 50) hungerDrainMult = 1.5;
+            // Do not drain stats if no tasks are currently available
+            if (tasks.length === 0) {
+                return;
+            }
 
-            stats.hunger = clamp(stats.hunger - (CONFIG.Drain.Hunger * hungerDrainMult), 0, CONFIG.Caps.Stats);
-            stats.mood = clamp(stats.mood - CONFIG.Drain.Mood, 0, CONFIG.Caps.Stats);
+            // Determine drain rates based on mood level
+            const isLowMood = stats.mood <= 50;
+            const hungerDrain = isLowMood ? CONFIG.Drain.Hunger_Low : CONFIG.Drain.Hunger_High;
+            const moodDrain = isLowMood ? CONFIG.Drain.Mood_Low : CONFIG.Drain.Mood_High;
+            const healthDrain = isLowMood ? CONFIG.Drain.Health_Low_hunger_Low : CONFIG.Drain.Health_Low_hunger_High;
+
+            stats.hunger = clamp(stats.hunger - hungerDrain, 0, CONFIG.Caps.Stats);
+            stats.mood = clamp(stats.mood - moodDrain, 0, CONFIG.Caps.Stats);
 
             if (stats.hunger < 20) {
-                stats.health = clamp(stats.health - CONFIG.Drain.Health_Low_hunger, 0, CONFIG.Caps.Stats);
+                stats.health = clamp(stats.health - healthDrain, 0, CONFIG.Caps.Stats);
             } else if (stats.health < 100) {
                 stats.health = clamp(stats.health + 0.5, 0, 100); // Small passive regen
             }
 
             saveAll();
             updateUI();
+
+            // Check if pet has died
+            if (stats.health <= 0) {
+                showDeath();
+            }
+        }
+
+        // ==========================================
+        // DEATH HANDLING
+        // ==========================================
+        function showDeath() {
+            // Stop the game loop
+            clearInterval(gameLoopId);
+            
+            // Disable all interactive elements
+            document.getElementById('use-apple').disabled = true;
+            document.getElementById('use-ball').disabled = true;
+            document.getElementById('add-task-btn').disabled = true;
+            document.getElementById('new-task-input').disabled = true;
+            
+            // Show death stats
+            document.getElementById('death-level').innerText = stats.level;
+            document.getElementById('death-exp').innerText = stats.exp;
+            
+            // Show death modal
+            document.getElementById('death-modal').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            // Clear all saved data
+            localStorage.removeItem('pet_save_data');
+            localStorage.removeItem('petInventory');
+            localStorage.removeItem('pet_tasks');
+            
+            // Reset stats to initial values
+            stats = {
+                health: 100,
+                hunger: 100,
+                mood: 100,
+                level: 1,
+                exp: 0,
+                lastTick: Date.now()
+            };
+            
+            // Reset inventory
+            inventory = {
+                Apple: 0,
+                Ball: 0
+            };
+            
+            // Reset tasks
+            tasks = [
+                { id: 1, text: "Review Data Structures", difficulty: "MEDIUM" },
+                { id: 2, text: "Math Homework Set B", difficulty: "HARD" },
+                { id: 3, text: "Write Essay Outline", difficulty: "EASY" }
+            ];
+            
+            // Save and hide modal
+            saveAll();
+            document.getElementById('death-modal').classList.add('hidden');
+            
+            // Re-enable interactive elements
+            document.getElementById('use-apple').disabled = false;
+            document.getElementById('use-ball').disabled = false;
+            document.getElementById('add-task-btn').disabled = false;
+            document.getElementById('new-task-input').disabled = false;
+            
+            // Update UI and restart game loop
+            updateUI();
+            renderTasks();
+            gameLoopId = setInterval(processTick, CONFIG.TICK_RATE);
         }
 
         // ==========================================
@@ -365,13 +501,15 @@
 
         document.getElementById('use-apple').addEventListener('click', () => useItem('Apple'));
         document.getElementById('use-ball').addEventListener('click', () => useItem('Ball'));
+        document.getElementById('restart-btn').addEventListener('click', restartGame);
 
         // ==========================================
         // INIT
         // ==========================================
+        let gameLoopId;
         updateUI();
         renderTasks();
-        setInterval(processTick, CONFIG.TICK_RATE);
+        gameLoopId = setInterval(processTick, CONFIG.TICK_RATE);
     </script>
 </body>
 </html>
